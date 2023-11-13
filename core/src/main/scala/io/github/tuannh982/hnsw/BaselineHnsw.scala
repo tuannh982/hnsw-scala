@@ -172,7 +172,7 @@ class BaselineHnsw[T, D](
     // for lc ← L … l+1
     for (lc <- topLevel to level + 1 by -1) {
       // W ← SEARCH-LAYER(q, ep, ef=1, lc)
-      W.push(searchLayer(q, ep, 1, lc): _*)
+      W.pushAll(searchLayer(q, ep, 1, lc))
       // ep ← get the nearest element from W to q
       ep = W.pop().index
     }
@@ -180,7 +180,7 @@ class BaselineHnsw[T, D](
     for (lc <- math.min(topLevel, level) to 0 by -1) {
       val maxNeighborCountAtLc = maxNeighborCount(lc)
       // W ← SEARCH-LAYER(q, ep, efConstruction, lc)
-      W.push(searchLayer(q, ep, efConstruction, lc): _*)
+      W.pushAll(searchLayer(q, ep, efConstruction, lc))
       // neighbors ← SELECT-NEIGHBORS(q, W, M, lc) // alg. 3 or alg. 4
       val neighbors = selectNeighbors1Alg3(W, maxNeighborCountAtLc)
       // add bidirectional connections from neighbors to q at layer lc
@@ -230,12 +230,12 @@ class BaselineHnsw[T, D](
     // for lc ← L … 1
     for (lc <- topLevel to 1 by -1) {
       // W ← SEARCH-LAYER(q, ep, ef=1, lc)
-      W.push(searchLayer(q, ep, 1, lc): _*)
+      W.pushAll(searchLayer(q, ep, 1, lc))
       // ep ← get nearest element from W to q
       ep = W.pop().index
     }
     // W ← SEARCH-LAYER(q, ep, ef, lc =0)
-    W.push(searchLayer(q, ep, ef, 0): _*)
+    W.pushAll(searchLayer(q, ep, ef, 0))
     W.topK(k).map(c => vectors(c.index))
   }
 }
@@ -249,7 +249,9 @@ object BaselineHnsw {
     private val lst = new mutable.HashSet[Int]()
     private val pq  = new mutable.PriorityQueue[Candidate[D]]()(ord)
 
-    def push(candidates: Candidate[D]*): Unit = {
+    def push(candidates: Candidate[D]*): Unit = pushAll(candidates)
+
+    def pushAll(candidates: Seq[Candidate[D]]): Unit = {
       candidates.foreach { candidate =>
         if (!lst.contains(candidate.index)) {
           lst.add(candidate.index)

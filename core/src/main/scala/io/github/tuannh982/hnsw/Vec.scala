@@ -6,6 +6,8 @@ case class Vec[T](arr: Array[T]) {
   def dimension: Int = arr.length
 
   override def hashCode(): Int = MurmurHash3.arrayHash(arr)
+
+  override def toString: String = arr.mkString("Array(", ", ", ")")
 }
 
 object Vec {
