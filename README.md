@@ -4,10 +4,10 @@ HNSW algorithm implementations
 
 ## Implementations
 
-| model    | description                                                            | path                                                                |
-|----------|------------------------------------------------------------------------|---------------------------------------------------------------------|
-| baseline | the base implementation from from https://arxiv.org/pdf/1603.09320.pdf | [core/src/main/scala/io/github/tuannh982/hnsw/BaselineHnsw.scala](core/src/main/scala/io/github/tuannh982/hnsw/BaselineHnsw.scala) |
-|          |                                                                        |                                                                     |
+| model    | description                                                         | path                                                                |
+|----------|---------------------------------------------------------------------|---------------------------------------------------------------------|
+| baseline | the base implementation from https://arxiv.org/pdf/1603.09320.pdf   | [BaselineHnsw.scala](core/src/main/scala/io/github/tuannh982/hnsw/BaselineHnsw.scala) |
+|          |                                                                     |                                                                     |
 
 ## Benchmarks
 
