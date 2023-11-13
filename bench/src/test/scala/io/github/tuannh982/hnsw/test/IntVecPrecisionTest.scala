@@ -12,7 +12,7 @@ class IntVecPrecisionTest extends AnyFlatSpec {
   private val distanceOrd = Ordering.Double
 
   def randomVector(l: Int, h: Int): Vec[Int] = {
-    Vec(Array.fill(dimension)(l + random.nextInt(h)))
+    Vec(Array.fill(dimension)(l + random.nextInt(h - l)))
   }
 
   // since the actual set size is equals to expected set size, so in our case, precision and recall are having exactly same value
@@ -30,7 +30,7 @@ class IntVecPrecisionTest extends AnyFlatSpec {
 
   it should "calculate precision of baseline hnsw" ignore {
     // generate data
-    val nVectors = 10000 + random.nextInt(10000)
+    val nVectors = 10000 + random.nextInt(20000 - 10000)
     val vectors  = Array.fill(nVectors)(randomVector(-50, 50))
     println(s"number of generated vectors: $nVectors")
     // load baseline model
@@ -53,7 +53,7 @@ class IntVecPrecisionTest extends AnyFlatSpec {
       model.add(vector)
     }
     // calculate precision
-    val nQueries = 10000 + random.nextInt(10000)
+    val nQueries = 10000 + random.nextInt(20000 - 10000)
     val queries  = Array.fill(nQueries)(randomVector(-50, 50))
     println(s"number of query vectors: $nQueries")
     var precision = 0.0
