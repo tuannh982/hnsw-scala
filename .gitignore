@@ -59,3 +59,5 @@ project/**/metals.sbt
 .bsp
 .idea
 .vscode
+
+project/build.properties
