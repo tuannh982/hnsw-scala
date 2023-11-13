@@ -5,7 +5,7 @@ trait Knn[T, D] {
   val df: DistanceFunction[T, D]
   val distanceOrd: Ordering[D]
 
-  def add(vectors: Vector[T]*): Unit
+  def add(vector: Vector[T]): Unit
 
   def knn(vector: Vector[T], k: Int): Seq[Vector[T]]
 }
