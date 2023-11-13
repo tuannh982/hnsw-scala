@@ -15,7 +15,7 @@ class BruteForce[T, D](
   override val dimension: Int,
   override val df: DistanceFunction[T, D],
   override val distanceOrd: Ordering[D]
-) extends Knn[T, D] {
+) extends BaseGraph[T, D] {
 
   private val candidateOrd = Candidate.fromDistanceOrd(distanceOrd)
   private val vectors      = new ArrayBuffer[Vec[T]]()
@@ -29,10 +29,10 @@ class BruteForce[T, D](
 
   override def knn(vector: Vec[T], k: Int): Seq[Vec[T]] = {
     Utils.assert(vector.dimension == dimension, s"input vector dim=${vector.dimension}, knn dim=$dimension")
-    val distances = new mutable.PriorityQueue[Candidate[D]]()(candidateOrd.reverse)
+    val distances = new ArrayBuffer[Candidate[D]]()
     for (i <- vectors.indices) {
-      distances.enqueue(Candidate(i, df(vectors(i), vector)))
+      distances += Candidate(i, df(vectors(i), vector))
     }
-    distances.take(k).map(c => vectors(c.index)).toList
+    distances.sorted(candidateOrd).take(k).map(c => vectors(c.index)).toList
   }
 }

@@ -1,6 +1,6 @@
 package io.github.tuannh982.hnsw
 
-trait Knn[T, D] {
+trait BaseGraph[T, D] {
   val dimension: Int
   val df: DistanceFunction[T, D]
   val distanceOrd: Ordering[D]

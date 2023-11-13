@@ -7,6 +7,11 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
+/**
+  * Implementation of baseline HNSW algorithm from paper https://arxiv.org/pdf/1603.09320.pdf
+  *
+  * **note**: this is a reference implementation, it only focus on correctness, not about performance
+  */
 class BaselineHnsw[T, D](
   override val dimension: Int,
   override val df: DistanceFunction[T, D],
@@ -15,7 +20,7 @@ class BaselineHnsw[T, D](
   val mL: Double = 1.0 / math.log(16),
   val efConstruction: Int = 64,
   val ef: Int = 100
-) extends Knn[T, D] {
+) extends BaseGraph[T, D] {
 
   private val maxM                                      = m + 1
   private val maxM0                                     = m * 2 + 1
@@ -95,7 +100,7 @@ class BaselineHnsw[T, D](
         val c = C.pop()
         var f = W.peek()
         // if distance(c, q) > distance(f, q)
-        if (distanceOrd.gt(df(vectors(c.index), q), df(vectors(f.index), q))) {
+        if (distanceOrd.gt(c.distance, f.distance)) {
           // break // all elements in W are evaluated
           break
         } else {
@@ -136,7 +141,7 @@ class BaselineHnsw[T, D](
 
   // SELECT-NEIGHBORS(q, W, M, lc)
   private def selectNeighbors1Alg3(candidates: CandidateList[D], M: Int): Seq[Candidate[D]] = {
-    candidates.topK(M)
+    candidates.toList.sorted(candidateOrd).take(M)
   }
 
   // SELECT-NEIGHBORS(e, eConn, Mmax, lc)
@@ -146,7 +151,7 @@ class BaselineHnsw[T, D](
     C.foreach { candidate =>
       candidateList.push(Candidate(candidate, df(vectors(candidate), vector)))
     }
-    candidateList.topK(M)
+    candidateList.take(M)
   }
 
   // Algorithm 1
@@ -185,8 +190,10 @@ class BaselineHnsw[T, D](
       val neighbors = selectNeighbors1Alg3(W, maxNeighborCountAtLc)
       // add bidirectional connections from neighbors to q at layer lc
       neighbors.foreach { neighbor =>
-        neighborGraph(neighbor.index)(lc).arr += index
-        neighborGraph(index)(lc).arr += neighbor.index
+        if (neighbor.index != index) { // don't self link
+          neighborGraph(neighbor.index)(lc).arr += index
+          neighborGraph(index)(lc).arr += neighbor.index
+        }
       }
       // for each e ∈ neighbors // shrink connections if needed
       neighbors.foreach { neighbor =>
@@ -236,7 +243,7 @@ class BaselineHnsw[T, D](
     }
     // W ← SEARCH-LAYER(q, ep, ef, lc =0)
     W.pushAll(searchLayer(q, ep, ef, 0))
-    W.topK(k).map(c => vectors(c.index))
+    W.take(k).map(c => vectors(c.index))
   }
 }
 
@@ -268,10 +275,13 @@ object BaselineHnsw {
       pq.dequeue()
     }
 
-    def nonEmpty: Boolean               = pq.nonEmpty
-    def isEmpty: Boolean                = pq.isEmpty
-    def toList: Seq[Candidate[D]]       = pq.toList
-    def size: Int                       = pq.size
-    def topK(k: Int): Seq[Candidate[D]] = pq.take(k).toList
+    def nonEmpty: Boolean         = pq.nonEmpty
+    def isEmpty: Boolean          = pq.isEmpty
+    def toList: Seq[Candidate[D]] = pq.toList
+    def size: Int                 = pq.size
+
+    def take(n: Int): Seq[Candidate[D]] = {
+      toList.sorted(ord.reverse).take(n)
+    }
   }
 }
