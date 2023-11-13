@@ -11,30 +11,25 @@ import scala.collection.mutable.ArrayBuffer
   * @param df the distance function
   * @param distanceOrd the distance ordering, used to compare distance
   */
-abstract class BruteForce[T, D](
+class BruteForce[T, D](
   override val dimension: Int,
   override val df: DistanceFunction[T, D],
   override val distanceOrd: Ordering[D]
 ) extends Knn[T, D] {
 
-  private case class Candidate(index: Int, distance: D)
+  private val candidateOrd = Candidate.fromDistanceOrd(distanceOrd)
+  private val vectors      = new ArrayBuffer[Vec[T]]()
+  private var nextIndex    = 0
 
-  private val candidateOrd = new Ordering[Candidate] {
-    override def compare(x: Candidate, y: Candidate): Int = distanceOrd.compare(x.distance, y.distance)
-  }
-
-  private val vectors   = new ArrayBuffer[Vector[T]]()
-  private var nextIndex = 0
-
-  override def add(vector: Vector[T]): Unit = {
+  override def add(vector: Vec[T]): Unit = {
     Utils.assert(vector.dimension == dimension, s"input vector dim=${vector.dimension}, knn dim=$dimension")
     vectors += vector
     nextIndex += 1
   }
 
-  override def knn(vector: Vector[T], k: Int): Seq[Vector[T]] = {
+  override def knn(vector: Vec[T], k: Int): Seq[Vec[T]] = {
     Utils.assert(vector.dimension == dimension, s"input vector dim=${vector.dimension}, knn dim=$dimension")
-    val distances = new mutable.PriorityQueue[Candidate]()(candidateOrd.reverse)
+    val distances = new mutable.PriorityQueue[Candidate[D]]()(candidateOrd.reverse)
     for (i <- vectors.indices) {
       distances.enqueue(Candidate(i, df(vectors(i), vector)))
     }
