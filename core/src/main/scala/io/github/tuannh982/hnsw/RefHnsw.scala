@@ -1,6 +1,6 @@
 package io.github.tuannh982.hnsw
 
-import io.github.tuannh982.hnsw.BaselineHnsw.{CandidateList, EntryPoint, NeighborList}
+import io.github.tuannh982.hnsw.RefHnsw.{CandidateList, EntryPoint, NeighborList}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -8,11 +8,11 @@ import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
 /**
-  * Implementation of baseline HNSW algorithm from paper https://arxiv.org/pdf/1603.09320.pdf
+  * Reference implementation of HNSW algorithm described in paper https://arxiv.org/pdf/1603.09320.pdf
   *
   * **note**: this is a reference implementation, it only focus on correctness, not about performance
   */
-class BaselineHnsw[T, D](
+class RefHnsw[T, D](
   override val dimension: Int,
   override val df: DistanceFunction[T, D],
   override val distanceOrd: Ordering[D],
@@ -247,7 +247,7 @@ class BaselineHnsw[T, D](
   }
 }
 
-object BaselineHnsw {
+object RefHnsw {
   case class EntryPoint(index: Int, level: Int)
 
   case class NeighborList(arr: ArrayBuffer[Int])

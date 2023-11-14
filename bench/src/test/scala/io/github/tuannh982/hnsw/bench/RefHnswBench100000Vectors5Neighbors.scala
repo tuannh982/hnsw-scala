@@ -1,17 +1,17 @@
 package io.github.tuannh982.hnsw.bench
 
-import io.github.tuannh982.hnsw.{BaseGraph, BaselineHnsw, BruteForce, EuclidIntVectorDF, Vec}
+import io.github.tuannh982.hnsw.{BaseGraph, BruteForce, IntL2DF, RefHnsw, Vec}
 import org.openjdk.jmh.annotations.{Benchmark, BenchmarkMode, Mode, Scope, State}
 
 import scala.util.Random
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Array(Mode.Throughput))
-class BaselineHnswBench100000Vectors5Neighbors {
+class RefHnswBench100000Vectors5Neighbors {
   private val nVectors                      = 100000
   private val k                             = 5
   private val random                        = new Random()
-  private val df                            = new EuclidIntVectorDF()
+  private val df                            = new IntL2DF()
   private val dimension                     = 64
   private val distanceOrd                   = Ordering.Double
   private var model: BaseGraph[Int, Double] = _
@@ -22,7 +22,7 @@ class BaselineHnswBench100000Vectors5Neighbors {
 
   private def init(): Unit = {
     val vectors = Array.fill(nVectors)(randomVector(-50, 50))
-    val hnsw = new BaselineHnsw(
+    val hnsw = new RefHnsw(
       dimension,
       df,
       distanceOrd
