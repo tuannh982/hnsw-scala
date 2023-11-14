@@ -1,6 +1,7 @@
 package io.github.tuannh982.hnsw.bench
 
-import io.github.tuannh982.hnsw.{BaseGraph, BruteForce, IntL2DF, RefHnsw, Vec}
+import io.github.tuannh982.hnsw.tuning.ExampleIntVecL2DF.IntL2DF
+import io.github.tuannh982.hnsw.{BaseGraph, BruteForce, RefHnsw, Vec}
 import org.openjdk.jmh.annotations.{Benchmark, BenchmarkMode, Mode, Scope, State}
 
 import scala.util.Random

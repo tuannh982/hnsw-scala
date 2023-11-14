@@ -6,8 +6,6 @@ versionScheme := ProjectInfo.versionScheme
 
 enablePlugins(JmhPlugin)
 
-libraryDependencies ++= Dependencies.testDependencies
-
 // jmh configs
 Jmh / sourceDirectory := (Test / sourceDirectory).value
 Jmh / classDirectory := (Test / classDirectory).value

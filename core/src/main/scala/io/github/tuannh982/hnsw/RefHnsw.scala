@@ -18,7 +18,7 @@ class RefHnsw[T, D](
   override val distanceOrd: Ordering[D],
   val m: Int = 16,
   val mL: Double = 1.0 / math.log(16),
-  val efConstruction: Int = 64,
+  val efConstruction: Int = 20,
   val ef: Int = 100
 ) extends BaseGraph[T, D] {
 
